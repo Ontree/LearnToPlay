@@ -2,6 +2,7 @@
 """Run Atari Environment with DQN."""
 import argparse
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import random
 
 import numpy as np

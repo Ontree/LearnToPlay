@@ -147,7 +147,7 @@ def get_output_folder(parent_dir, env_name):
 def main():  # noqa: D103
     parser = argparse.ArgumentParser(description='Run DQN on Atari Breakout')
     #parser.add_argument('--env', default='SpaceInvaders-v0', help='Atari env name')
-    parser.add_argument('--env', default='classic_kong', help='env name')
+    parser.add_argument('--env', default='classic_kong.smc', help='env name')
     parser.add_argument('--output', default='results', help='Directory to save data to')
     parser.add_argument('-l', '--isLinear', default=0, type=int, choices=range(0, 2), help='1: use linear model; 0: use deep model')
     parser.add_argument('-m', '--modelType', default='q', choices=['q', 'double', 'dueling'], help='q: q learning; double: double q learning; dueling: dueling q learning')
@@ -165,8 +165,8 @@ def main():  # noqa: D103
     if args.platform == 'atari':
         env = gym.make(args.env)
     else:
-        rom_path = 'roms/' + args.env + '.smc'
-        env = rle(rom_path)
+        rom_path = 'roms/' + args.env
+        env = rle(rom_path, path=args.output, skip_mean=2)
     #env = gym.wrappers.Monitor(env, args.output)
     env.seed(args.seed)
 
@@ -175,7 +175,7 @@ def main():  # noqa: D103
     sess = tf.Session(config=config)
     K.set_session(sess)
     K.get_session().run(tf.initialize_all_variables())
-    input_shape = (160, 160)    
+    input_shape = (84, 84)    
     is_linear = args.isLinear
     agent = DQNAgent(q_network = create_model(4, input_shape, env.action_space.n, is_linear, args.modelType),
         q_network2 = create_model(4, input_shape, env.action_space.n, is_linear, args.modelType),
@@ -189,7 +189,7 @@ def main():  # noqa: D103
         is_linear = is_linear,
         model_type = args.modelType,
         use_replay_and_target_fixing = (not args.simple),
-        epsilon = 0, #0.05,
+        epsilon = 0.05,
         action_interval = 4,
         output_path = args.output,
         save_freq = 100000)

@@ -392,6 +392,10 @@ class DQNAgent:
         output_string = ''
         for epi in range(num_episodes):
             self.his_preprocessor.reset();
+            if epi < 3:
+                env.record = 1
+            else:
+                env.record = 0
             state = env.reset();
             reward = 0
             length = 0
